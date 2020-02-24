@@ -28,14 +28,18 @@ def create_playlist(plex, playlist_title, artists):
     logger.info(f"Creating playlist {playlist_title}")
     favorites = [(artist_name, get_favorites_for_artist(artist_name, plex)) for artist_name in artists]
 
+    all_tracks = [track for _, tracks in favorites for track in tracks]
+    
     for artist, tracks in favorites:
-        logger.info(f"name: {artist} ({len(tracks)})")
+        logger.debug(f"name: {artist} ({len(tracks)})")
 
     playlist = [playlist for playlist in plex.playlists() if playlist.title == playlist_title]
     if playlist:
         playlist[0].delete()
-    
-    plex.createPlaylist(playlist_title, tracks, "audio")
+
+    logger.info(f"Adding {len(all_tracks)} tracks to {playlist_title}")
+    logger.debug(all_tracks)
+    plex.createPlaylist(playlist_title, all_tracks, "audio")
     logger.info("Playlist created")
         
 """
