@@ -6,7 +6,7 @@ create playlists of favorites
 import os, logging
 from plexapi.myplex import MyPlexAccount
 
-logging.basicConfig(level=logging.INFO)
+logging.basicConfig(level=logging.DEBUG)
 logger = logging.getLogger(__name__)
 
 def main():
@@ -18,8 +18,15 @@ def main():
     account = MyPlexAccount(PLEX_USER, PLEX_PASSWORD)
     plex = account.resource(PLEX_SERVER).connect()
 
-    grunge_artists = ["Metallica", "Pearl Jam", "Alice in Chains", "Nirvana", "Tool", "Soundgarden", "Silverchair", "Bush", "Candlebox", "Stone Temple Pilots"]
+    with open("grunge_era_artists.txt") as f:
+       grunge_artists = f.read().splitlines()
+
     create_playlist(plex, "Grunge", grunge_artists)
+
+    with open("post_grunge_era_artists.txt") as f:
+       post_grunge_artists = f.read().splitlines()
+
+    create_playlist(plex, "Post-Grunge", post_grunge_artists)
 
 """
 Create a playlist from a list of artists
@@ -38,7 +45,6 @@ def create_playlist(plex, playlist_title, artists):
         playlist[0].delete()
 
     logger.info(f"Adding {len(all_tracks)} tracks to {playlist_title}")
-    logger.debug(all_tracks)
     plex.createPlaylist(playlist_title, all_tracks, "audio")
     logger.info("Playlist created")
         
